@@ -35,11 +35,11 @@ def get_long_poling_checks(timestamp=None):
 
 def notify_to_telegram(bot, data, chat_id):
     for work in data['new_attempts']:
-        is_nagative = work['is_negative']
+        is_negative = work['is_negative']
         lesson_title = work['lesson_title']
         lesson_url = work['lesson_url']
         massage = f'У Вас проверили работу "{lesson_title}"\n\n'
-        result = 'Преподавателю все понравилось, можно приступать к следующему уроку' if not is_nagative else \
+        result = 'Преподавателю все понравилось, можно приступать к следующему уроку' if not is_negative else \
             f'К сожалению, в работе нашлись ошибки.'
         bot.send_message(text=f'{massage}{result} \n {lesson_url}', chat_id=chat_id)
 
