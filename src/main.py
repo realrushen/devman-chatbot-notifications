@@ -28,10 +28,7 @@ def get_checks():
 def get_long_poling_checks(timestamp=None):
     url = 'https://dvmn.org/api/long_polling/'
     headers = {'Authorization': f'Token {TOKEN}'}
-    params = {}
-    if timestamp:
-        params['timestamp'] = timestamp
-    response = requests.get(url, headers=headers, params=params, timeout=5)
+    response = requests.get(url, headers=headers, params={'timestamp': timestamp})
     response.raise_for_status()
     return response.json()
 
@@ -56,11 +53,11 @@ def main():
     while True:
         try:
             response = get_long_poling_checks(timestamp=timestamp)
-        except ReadTimeout as ex:
-            logger.error(ex)
+        except ReadTimeout as e:
+            logger.error(e)
             continue
-        except HTTPError as ex:
-            logger.error(ex)
+        except HTTPError as e:
+            logger.error(e)
             continue
         except ConnectionError:
             logger.error('Connection problems')
