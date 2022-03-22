@@ -55,7 +55,7 @@ def main():
 
     while True:
         try:
-            resp = get_long_poling_checks(timestamp=timestamp)
+            response = get_long_poling_checks(timestamp=timestamp)
         except ReadTimeout as ex:
             logger.error(ex)
             continue
@@ -66,13 +66,13 @@ def main():
             logger.error('Connection problems')
             time.sleep(5)
             continue
-        if resp['status'] == 'timeout':
+        if response['status'] == 'timeout':
             logger.debug('Timeout')
-            timestamp = resp['timestamp_to_request']
-        if resp['status'] == 'found':
-            logger.info(resp['new_attempts'])
-            notify_to_telegram(bot, resp, chat_id=CHAT_ID)
-            timestamp = resp['last_attempt_timestamp']
+            timestamp = response['timestamp_to_request']
+        if response['status'] == 'found':
+            logger.info(response['new_attempts'])
+            notify_to_telegram(bot, response, chat_id=CHAT_ID)
+            timestamp = response['last_attempt_timestamp']
 
 
 if __name__ == '__main__':
