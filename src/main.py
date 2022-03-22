@@ -14,7 +14,6 @@ TOKEN = env.str('TOKEN')
 BOT_TOKEN = env.str('BOT_TOKEN')
 CHAT_ID = env.int('CHAT_ID')
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -49,6 +48,8 @@ def notify_to_telegram(bot, data, chat_id):
 
 
 def main():
+    logging.basicConfig(level=logging.DEBUG)
+
     bot = telegram.Bot(token=BOT_TOKEN)
     timestamp = None
 
