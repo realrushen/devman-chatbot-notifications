@@ -17,14 +17,6 @@ CHAT_ID = env.int('CHAT_ID')
 logger = logging.getLogger(__name__)
 
 
-def get_checks():
-    url = 'https://dvmn.org/api/user_reviews/'
-    headers = {'Authorization': f'Token {TOKEN}'}
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    return response.json()
-
-
 def get_long_poling_checks(timestamp=None):
     url = 'https://dvmn.org/api/long_polling/'
     headers = {'Authorization': f'Token {TOKEN}'}
