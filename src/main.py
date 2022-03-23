@@ -1,4 +1,6 @@
 import time
+from collections import namedtuple
+
 import telegram
 
 import requests
@@ -6,13 +8,22 @@ import logging
 
 from requests.exceptions import ReadTimeout, HTTPError
 from environs import Env
+from vk_maria import Vk
 
 env = Env()
 env.read_env()
 
+# Devman API token
 TOKEN = env.str('TOKEN')
+
+# Telegram bot token
 BOT_TOKEN = env.str('BOT_TOKEN')
+# Chat_id for notifications
 CHAT_ID = env.int('CHAT_ID')
+
+# VK Community token
+VK_TOKEN = env.str('VK_TOKEN')
+VK_USER_ID = env.str('VK_USER_ID')
 
 logger = logging.getLogger(__name__)
 
@@ -25,21 +36,28 @@ def get_long_poling_checks(timestamp=None):
     return response.json()
 
 
-def notify_to_telegram(bot, data, chat_id):
+def notify(bots, data, chat_id, user_id):
     for work in data['new_attempts']:
         is_negative = work['is_negative']
         lesson_title = work['lesson_title']
         lesson_url = work['lesson_url']
-        massage = f'У Вас проверили работу "{lesson_title}"\n\n'
-        result = 'Преподавателю все понравилось, можно приступать к следующему уроку' if not is_negative else \
-            f'К сожалению, в работе нашлись ошибки.'
-        bot.send_message(text=f'{massage}{result} \n {lesson_url}', chat_id=chat_id)
+        message = '\n'.join([
+            f'У Вас проверили работу "{lesson_title}"\n\n',
+            'Преподавателю все понравилось, можно приступать к следующему уроку' \
+                if not is_negative else \
+                f'К сожалению, в работе нашлись ошибки.',
+            f'{lesson_url}'
+        ])
+
+        bots.telegram.send_message(text=message, chat_id=chat_id)
+        bots.vk.messages_send(user_id=user_id, message=message)
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
+    Bots = namedtuple('Bots', ('telegram', 'vk'))
 
-    bot = telegram.Bot(token=BOT_TOKEN)
+    bots = Bots(telegram=telegram.Bot(token=BOT_TOKEN), vk=Vk(access_token=VK_TOKEN))
     timestamp = None
 
     while True:
@@ -60,7 +78,7 @@ def main():
             timestamp = response['timestamp_to_request']
         if response['status'] == 'found':
             logger.info(response['new_attempts'])
-            notify_to_telegram(bot, response, chat_id=CHAT_ID)
+            notify(bots, response, chat_id=CHAT_ID, user_id=VK_USER_ID)
             timestamp = response['last_attempt_timestamp']
 
 
