@@ -40,7 +40,7 @@ def notify_to_telegram(bot, data, chat_id):
 
 
 def main():
-    logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
 
     telegram_handler = TelegramChatHandler(token=LOGS_BOT_TOKEN, chat_id=CHAT_ID)
     formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
