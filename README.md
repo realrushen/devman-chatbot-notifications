@@ -13,8 +13,9 @@ _Important note:_ To run this bot you need **python 3.9** already installed.
 4. Install dependencies `pip3 install -r requirements.txt`
 5. Create .env file `cd ./src && touch .env`
 6. Specify `TOKEN` - dvmn.org API token that you can get [here](https://dvmn.org/api/docs/),
-   `BOT_TOKEN` - telegram bot token from [botfather](https://t.me/botfather) and
-   `CHAT_ID` - your telegram _chat_id_
+   `BOT_TOKEN` - telegram bot token from [botfather](https://t.me/botfather),
+   `CHAT_ID` - your telegram _chat_id_,
+   `LOGS_BOT_TOKEN` - telegram bot token for bot that sends logs
 
 Now all ready to start bot with `python3 ./main.py`
 

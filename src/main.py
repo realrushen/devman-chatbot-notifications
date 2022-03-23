@@ -7,11 +7,14 @@ import logging
 from requests.exceptions import ReadTimeout, HTTPError
 from environs import Env
 
+from log_handlers import TelegramChatHandler
+
 env = Env()
 env.read_env()
 
 TOKEN = env.str('TOKEN')
 BOT_TOKEN = env.str('BOT_TOKEN')
+LOGS_BOT_TOKEN = env.str('LOGS_BOT_TOKEN')
 CHAT_ID = env.int('CHAT_ID')
 
 logger = logging.getLogger(__name__)
@@ -37,11 +40,17 @@ def notify_to_telegram(bot, data, chat_id):
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.DEBUG)
+
+    telegram_handler = TelegramChatHandler(token=LOGS_BOT_TOKEN, chat_id=CHAT_ID)
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    telegram_handler.setFormatter(formatter)
+    logger.addHandler(telegram_handler)
 
     bot = telegram.Bot(token=BOT_TOKEN)
     timestamp = None
 
+    logger.info('Bot started')
     while True:
         try:
             reviews = get_long_poling_reviews(timestamp=timestamp)
