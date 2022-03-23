@@ -17,7 +17,7 @@ CHAT_ID = env.int('CHAT_ID')
 logger = logging.getLogger(__name__)
 
 
-def get_long_poling_checks(timestamp=None):
+def get_long_poling_reviews(timestamp=None):
     url = 'https://dvmn.org/api/long_polling/'
     headers = {'Authorization': f'Token {TOKEN}'}
     response = requests.get(url, headers=headers, params={'timestamp': timestamp})
@@ -44,7 +44,7 @@ def main():
 
     while True:
         try:
-            response_data = get_long_poling_checks(timestamp=timestamp)
+            reviews = get_long_poling_reviews(timestamp=timestamp)
         except ReadTimeout as e:
             logger.error(e)
             continue
@@ -55,13 +55,13 @@ def main():
             logger.error('Connection problems')
             time.sleep(5)
             continue
-        if response_data['status'] == 'timeout':
+        if reviews['status'] == 'timeout':
             logger.debug('Timeout')
-            timestamp = response_data['timestamp_to_request']
-        if response_data['status'] == 'found':
-            logger.info(response_data['new_attempts'])
-            notify_to_telegram(bot, response_data, chat_id=CHAT_ID)
-            timestamp = response_data['last_attempt_timestamp']
+            timestamp = reviews['timestamp_to_request']
+        if reviews['status'] == 'found':
+            logger.info(reviews['new_attempts'])
+            notify_to_telegram(bot, reviews, chat_id=CHAT_ID)
+            timestamp = reviews['last_attempt_timestamp']
 
 
 if __name__ == '__main__':
